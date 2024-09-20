@@ -37,11 +37,14 @@ import FooterComponent from './components/FooterComponent.js';
 
 import RoutesWithUserChatComponent from './components/user/RoutesWithUserChatComponent.js';
 
+import ScrollToTop from './utils/ScrollToTop.js';
+
 
 
 function App() {
   return (
     <BrowserRouter>
+    <ScrollToTop />
     <HeaderComponent />
       <Routes>
         <Route element={<RoutesWithUserChatComponent />}>
