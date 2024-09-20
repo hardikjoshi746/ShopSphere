@@ -17,7 +17,7 @@ const UserChatComponent = () => {
                     <div className="chat-msg">
                     {
                         Array.from({length: 20}).map((_, id) => (
-                        <div>
+                        <div key={id}>
                             <p>
                             <b>User: </b> Hello this is just a template
                         </p>
