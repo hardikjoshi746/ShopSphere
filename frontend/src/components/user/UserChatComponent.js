@@ -27,7 +27,7 @@ const UserChatComponent = () => {
                         </div>
                         ))
                     }
-                        
+                    
                     </div>
                     <textarea 
                     id="clientChatMsg"
