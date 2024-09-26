@@ -1,7 +1,9 @@
 const express = require('express');
 const app = express();
-const port = 3000;
+const port = 3001;
 const apiRoutes = require("./routes/apiRoutes")
+
+app.use(express.json()) // to parse the incoming requests with the json data
 
 app.get('/', async (req, res, next) => {
   res.json({message: "API Running..."})

@@ -1,7 +1,6 @@
-const Product = require("../model/productModel")
+const Product = require("../model/ProductModel")
 
 const getProducts = (req, res) => {
-    Product.create({name: "Macbook", price: 1000})
     res.send("Hello from product controller")
 }
 
