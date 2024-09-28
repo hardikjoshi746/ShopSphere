@@ -18,7 +18,7 @@ const categorySchema = new mongoose.Schema({
     default: "/images/default/tablets-category.png",
   },
 
-  attr: [{ key: { type: String }, value: [{ type: String }] }],
+  attrs: [{ key: { type: String }, value: [{ type: String }] }],
 });
 
 categorySchema.index({ description: 1 }); // sort the description in ascending order for faster search
