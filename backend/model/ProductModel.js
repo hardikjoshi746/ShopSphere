@@ -49,7 +49,7 @@ const productSchema = new mongoose.Schema(
       default: 0,
     },
 
-    attr: [{ key: { type: String }, value: { type: String } }],
+    attrs: [{ key: { type: String }, value: { type: String } }],
     images: [imageSchema],
 
     reviews: [
