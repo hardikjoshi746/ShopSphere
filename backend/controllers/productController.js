@@ -52,19 +52,11 @@ const getProducts = async (req, res, next) => {
           return acc; // return the accumulator
         } else return acc;
       }, []);
+
       quertyCondition = true;
     }
+    const searchQuery = req.params.searchQuery || ""; // get the search query from the URL
 
-    if (quertyCondition) {
-      query = {
-        $and: [
-          priceQueryCondition,
-          ratingQueryCondition,
-          categoryQueryCondition,
-          ...attrsQueryCondition,
-        ], // get products that match all the conditions
-      };
-    }
     //pagination
     const pageNum = Number(req.query.pageNum) || 1; // get the page number from the query string, if not present, default to 1
     // Sort by name, price etc.
@@ -74,11 +66,32 @@ const getProducts = async (req, res, next) => {
     if (sortOption) {
       let sortOpt = sortOption.split("_"); // split the sort option by underscore
       sort = { [sortOpt[0]]: sortOpt[1] === "1" ? 1 : -1 }; // if sortOpt[1] is 1, sort in ascending order, if 0, sort in descending order
-      console.log(sort);
+    }
+
+    let searchQueryCondition = {};
+    let select = {};
+    if (searchQuery) {
+      quertyCondition = true;
+      searchQueryCondition = { $text: { $search: searchQuery } }; // get products that match the search query
+      select = { score: { $meta: "textScore" } }; // get the accuracy os the search result
+      sort = { score: { $meta: "textScore" } }; // sort the search result by accuracy
+    }
+
+    if (quertyCondition) {
+      query = {
+        $and: [
+          priceQueryCondition,
+          ratingQueryCondition,
+          categoryQueryCondition,
+          searchQueryCondition,
+          ...attrsQueryCondition,
+        ], // get products that match all the conditions
+      };
     }
 
     const totalProducts = await Product.countDocuments(query); // get the total number of products
     const products = await Product.find(query)
+      .select(select)
       .skip(recordsPerPage * (pageNum - 1)) // skip the first 2 products
       .sort(sort)
       .limit(recordsPerPage); // get the first 2 products
@@ -93,4 +106,32 @@ const getProducts = async (req, res, next) => {
   }
 };
 
-module.exports = getProducts;
+const getProductsById = async (req, res, next) => {
+  try {
+    const product = await Product.findById(req.params.id)
+      .populate("reviews")
+      .orFail(); // get the product by id and populate the reviews
+    res.json(product);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getBestSellers = async (req, res, next) => {
+  try {
+    const products = await Product.aggregate([
+      { $sort: { category: 1, sales: -1 } }, // sort the products by category and sales in descending order
+      {
+        $group: { _id: "$category", doc_with_max_sales: { $first: "$$ROOT" } },
+      }, // get the product with the highest sales in each category
+      { $replaceWith: "$doc_with_max_sales" }, // replace the root with the product with the highest sales in each category
+      { $project: { _id: 1, name: 1, image: 1, category: 1, description: 1 } },
+      { $limit: 3 },
+    ]); // get the first 3 products
+    res.json(products);
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { getProducts, getProductsById, getBestSellers };
