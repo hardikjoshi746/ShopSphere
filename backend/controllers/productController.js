@@ -1,5 +1,6 @@
 const Product = require("../model/ProductModel");
 const recordsPerPage = require("../config/pagination");
+const imageValidate = require("../utils/imageValidate");
 
 const getProducts = async (req, res, next) => {
   try {
@@ -208,6 +209,35 @@ const adminUpdateProduct = async (req, res, next) => {
   }
 };
 
+const adminUpload = async (req, res, next) => {
+  try {
+    if (!req.files || !!req.files.images === false) {
+      return res.status(400).send("No files were uploaded.");
+    }
+    const validateResult = imageValidate(req.files.images); // validate the images
+    if (validateResult.error) {
+      // check if there is an error
+      return res.status(400).send(validateResult.error);
+    }
+    const path = require("path");
+    const { v4: uuidv4 } = require("uuid");
+    let imagesTable = [];
+
+    if (Array.isArray(req.files.images)) {
+      // check if the images are an array
+      imagesTable = req.files.images; // assign the images to the imagesTable
+    } else {
+      imagesTable.push(req.files.images); // add the image to the array
+    }
+    for (let image of imagesTable) {
+      console.log(path.extname(image.name));
+      console.log(uuidv4());
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getProducts,
   getProductsById,
@@ -216,4 +246,5 @@ module.exports = {
   adminDeleteProduct,
   adminCreateProduct,
   adminUpdateProduct,
+  adminUpload,
 };

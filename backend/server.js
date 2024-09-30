@@ -2,8 +2,10 @@ const express = require("express");
 const app = express();
 const port = 3001;
 const apiRoutes = require("./routes/apiRoutes");
+const fileUpload = require("express-fileupload");
 
 app.use(express.json()); // to parse the incoming requests with the json data
+app.use(fileUpload()); // to parse the incoming requests with the files
 
 app.get("/", async (req, res, next) => {
   res.json({ message: "API Running..." });
