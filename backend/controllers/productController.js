@@ -134,4 +134,86 @@ const getBestSellers = async (req, res, next) => {
   }
 };
 
-module.exports = { getProducts, getProductsById, getBestSellers };
+const adminGetProducts = async (req, res, next) => {
+  try {
+    const products = await Product.find()
+      .sort({ category: 1 })
+      .select("name price category"); // get all products and sort by category
+    res.json(products);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const adminDeleteProduct = async (req, res, next) => {
+  try {
+    const product = await Product.findById(req.params.id).orFail(); // delete the product by id
+    await product.remove();
+    res.json({ message: "Product deleted successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const adminCreateProduct = async (req, res, next) => {
+  try {
+    const product = new Product(); // create a new product
+    const { name, description, count, price, category, attributesTable } =
+      req.body;
+    product.name = name;
+    product.description = description;
+    product.count = count;
+    product.price = price;
+    product.category = category;
+    if (attributesTable.length > 0) {
+      attributesTable.map((item) => {
+        product.attrs.push(item); // add the attributes to the product
+      });
+    }
+    await product.save();
+
+    res.json({
+      message: "Product created successfully",
+      productId: product._id,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const adminUpdateProduct = async (req, res, next) => {
+  try {
+    const product = await Product.findById(req.params.id).orFail(); // update the product by id
+    const { name, description, count, price, category, attributesTable } =
+      req.body;
+    product.name = name || product.name;
+    product.description = description || product.description;
+    product.count = count || product.count;
+    product.price = price || product.price;
+    product.category = category || product.category;
+    if (attributesTable.length > 0) {
+      product.attrs = [];
+      attributesTable.map((item) => {
+        product.attrs.push(item); // add the attributes to the product
+      });
+    } else {
+      product.attrs = [];
+    }
+    await product.save();
+    res.json({
+      message: "Product updated successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = {
+  getProducts,
+  getProductsById,
+  getBestSellers,
+  adminGetProducts,
+  adminDeleteProduct,
+  adminCreateProduct,
+  adminUpdateProduct,
+};
