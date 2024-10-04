@@ -11,6 +11,10 @@ const {
   adminUpload,
   adminDeleteProductImage,
 } = require("../controllers/productController");
+const {
+  verifyIsLoggedIn,
+  verifyIsAdmin,
+} = require("../middleware/verifyAuthToken");
 
 router.get("category/:categoryName/search/:searchQuery", getProducts);
 router.get("/category/:categoryName", getProducts);
@@ -20,6 +24,8 @@ router.get("/bestsellers", getBestSellers);
 router.get("/get-one/:id", getProductsById);
 
 //admin routes
+router.use(verifyIsLoggedIn);
+router.use(verifyIsAdmin);
 router.get("/admin", adminGetProducts);
 router.put("/admin/:id", adminUpdateProduct);
 router.post("/admin/upload", adminUpload);
