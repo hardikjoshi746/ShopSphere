@@ -1,4 +1,6 @@
 const bcrypt = require("bcryptjs");
+const { Types } = require("mongoose");
+const ObjectId = Types.ObjectId;
 
 const users = [
   {
@@ -9,6 +11,7 @@ const users = [
     isAdmin: true,
   },
   {
+    _id: ObjectId("6711a08c322b78e773c16f43"),
     name: "John",
     lastName: "Doe",
     email: "john@doe.com",
