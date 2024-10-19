@@ -14,7 +14,8 @@ const getUserOrders = async (req, res, next) => {
 const getOrder = async (req, res, next) => {
   try {
     const order = await Order.findById(req.params.id) // get the order by id
-      .populate("user", "-password -isAdmin -_id, -__v -createdAt -updatedAt") // populate the user data
+      .populate("user", "-password -isAdmin -__v -createdAt -updatedAt") // Correct: Exclude fields properly
+      // populate the user data
       .orFail(); // get the order by id
     res.send(order);
   } catch (error) {
