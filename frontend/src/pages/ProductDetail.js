@@ -12,7 +12,18 @@ import { Rating } from "react-simple-star-rating";
 import ImageZoom from "js-image-zoom";
 import { useEffect } from "react";
 import AddedToCartMessageComponent from "../components/AddedToCartMessageComponent";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart } from "../redux/actions/cartActions";
+
 const ProductDetailPage = () => {
+  const dispatch = useDispatch();
+
+  const addToCartHandler = () => {
+    dispatch(addToCart);
+  };
+
+  const products = useSelector((state) => state.cart.value);
+
   var options = {
     // width: 400,
     // zoomWidth: 500,
@@ -27,8 +38,8 @@ const ProductDetailPage = () => {
     new ImageZoom(document.getElementById("third"), options);
     new ImageZoom(document.getElementById("fourth"), options);
   });
-    return (
-      <Container>
+  return (
+    <Container>
       <AddedToCartMessageComponent />
       <Row className="mt-5">
         <Col style={{ zIndex: 1 }} md={4}>
@@ -58,7 +69,7 @@ const ProductDetailPage = () => {
             <Col md={8}>
               <ListGroup variant="flush">
                 <ListGroup.Item>
-                  <h1>Product name</h1>
+                  <h1>Product name {products}</h1>
                 </ListGroup.Item>
                 <ListGroup.Item>
                   <Rating readonly size={20} initialValue={4} /> (1)
@@ -88,7 +99,9 @@ const ProductDetailPage = () => {
                   </Form.Select>
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  <Button variant="danger">Add to cart</Button>
+                  <Button onClick={addToCartHandler} variant="danger">
+                    Add to cart
+                  </Button>
                 </ListGroup.Item>
               </ListGroup>
             </Col>
@@ -132,7 +145,7 @@ const ProductDetailPage = () => {
         </Col>
       </Row>
     </Container>
-    )
-}
+  );
+};
 
-export default ProductDetailPage
+export default ProductDetailPage;
