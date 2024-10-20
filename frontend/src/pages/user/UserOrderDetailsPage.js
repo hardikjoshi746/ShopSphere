@@ -9,8 +9,8 @@ import {
 } from "react-bootstrap";
 import CartItemComponent from "../../components/CartItemComponent";
 const UserOrderDetailPage = () => {
-    return (
-      <Container fluid>
+  return (
+    <Container fluid>
       <Row className="mt-4">
         <h1>Order Details</h1>
         <Col md={8}>
@@ -48,7 +48,16 @@ const UserOrderDetailPage = () => {
           <h2>Order items</h2>
           <ListGroup variant="flush">
             {Array.from({ length: 3 }).map((item, idx) => (
-              <CartItemComponent key={idx} />
+              <CartItemComponent
+                item={{
+                  image: { path: "/images/tablets-category.png" },
+                  name: "Product Name",
+                  price: 10,
+                  count: 10,
+                  quantity: 10,
+                }}
+                key={idx}
+              />
             ))}
           </ListGroup>
         </Col>
@@ -80,7 +89,7 @@ const UserOrderDetailPage = () => {
         </Col>
       </Row>
     </Container>
-      );
-}
+  );
+};
 
-export default UserOrderDetailPage
+export default UserOrderDetailPage;

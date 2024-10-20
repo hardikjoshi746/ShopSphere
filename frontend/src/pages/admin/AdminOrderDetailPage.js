@@ -6,10 +6,20 @@ const getOrder = async (id) => {
   return data;
 };
 
-const markDelivered = async (id) => {};
+const markDelivered = async (id) => {
+  const { data } = await axios.put("/api/orders/delivered/" + id); // mark order as delivered
+  if (data) {
+    return data;
+  }
+};
 
 const AdminOrderDetailPage = () => {
-  return <OrderDetailPageComponent getOrder={getOrder} />;
+  return (
+    <OrderDetailPageComponent
+      getOrder={getOrder}
+      markDelivered={markDelivered}
+    />
+  );
 };
 
 export default AdminOrderDetailPage;

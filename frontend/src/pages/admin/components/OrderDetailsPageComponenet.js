@@ -11,7 +11,7 @@ import CartItemComponent from "../../../components/CartItemComponent";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 
-const OrderDetailPageComponent = ({ getOrder }) => {
+const OrderDetailPageComponent = ({ getOrder, markDelivered }) => {
   const { id } = useParams();
 
   const [userInfo, setUserInfo] = useState({});
@@ -125,6 +125,25 @@ const OrderDetailPageComponent = ({ getOrder }) => {
             <ListGroup.Item>
               <div className="d-grid gap-2">
                 <Button
+                  onClick={() =>
+                    markDelivered(id)
+                      .then((res) => {
+                        if (res) {
+                          setIsDelivered(true);
+                        }
+                      })
+                      .catch((err) => {
+                        if (err.response) {
+                          console.log(
+                            err.response.data.message
+                              ? err.response.data.message
+                              : err.response.data
+                          );
+                        } else {
+                          console.log("Error:", err.message); // Handle case when err.response is undefined
+                        }
+                      })
+                  }
                   size="lg"
                   disabled={buttonDisabled}
                   variant="danger"
