@@ -1,17 +1,18 @@
 const jwt = require("jsonwebtoken");
 const verifyIsLoggedIn = (req, res, next) => {
-  next();
-  return; // todo: remove this line to enable the middleware
+  // middleware function to verify if the user is logged in
   try {
-    const token = req.cookies.access_token;
+    // try block
+    const token = req.cookies.access_token; // get the token from the cookie
     if (!token) {
-      return res
+      // check if the token is not present
+      return res // return a response
         .status(403)
-        .send("You are not authorized to access this route");
+        .send("You are not authorized to access this route"); // send a 403 status code
     }
     try {
       const decode = jwt.verify(token, process.env.JWT_SECRET_KEY); // decode the token
-      req.user = decode;
+      req.user = decode; // set the user to the decoded token
       next();
     } catch (error) {
       return res.status(401).send("Unauthorized, Invalid token");
@@ -23,8 +24,6 @@ const verifyIsLoggedIn = (req, res, next) => {
 };
 
 const verifyIsAdmin = (req, res, next) => {
-  next();
-  return; // todo: remove this line to enable
   if (req.user && req.user.isAdmin) {
     // check if the user is an admin
     next();

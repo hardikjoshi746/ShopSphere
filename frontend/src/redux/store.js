@@ -1,20 +1,41 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
-import { counterReducer } from "./reducers/cartReducers";
 import thunk from "redux-thunk";
+
+import { counterReducer } from "./reducers/cartReducers";
+import { userRegisterLoginReducer } from "./reducers/userReducers";
 
 const reducer = combineReducers({
   cart: counterReducer,
+  UserRegisterLogin: userRegisterLoginReducer,
 });
 
+const userInfoLocalStorage = localStorage.getItem("userInfo") // Check if user info is in local storage
+  ? JSON.parse(localStorage.getItem("userInfo")) // Parse the user info from local storage
+  : sessionStorage.getItem("userInfo") // Check if user info is in session storage
+  ? JSON.parse(sessionStorage.getItem("userInfo")) // Parse the user info from session storage
+  : {};
+
+const INITIAL_STATE = {
+  // Set the initial state
+  cart: {
+    value: 0,
+  },
+  UserRegisterLogin: {
+    // Set the initial state for the UserRegisterLogin reducer
+    userInfo: userInfoLocalStorage, // Set the user info from local or session storage
+  },
+};
+
 const store = configureStore({
-  reducer, // Pass the combined reducer object here
+  reducer,
+  preloadedState: INITIAL_STATE, // Set the initial state here
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
 });
 
-// Dispatching an action to test the reducer
-store.dispatch({ type: "ADD_TO_CART", value: 0 });
+// Dispatching an action with the correct type and payload
+store.dispatch({ type: "ADD_TO_CART", payload: 1 }); // Example action with a payload
 
 // Logging the state
-console.log(store.getState()); // Logs the current state
+console.log(store.getState());
 
 export default store;

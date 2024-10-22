@@ -1,20 +1,48 @@
-import { Navigate, Outlet } from "react-router-dom"
-import UserChatComponent from "./user/UserChatComponent"
+import { Navigate, Outlet } from "react-router-dom";
+import UserChatComponent from "./user/UserChatComponent";
+import { useState, useEffect } from "react";
+import LoginPage from "../pages/LoginPage";
+import axios from "axios";
+
 const ProtectedRoutesComponent = ({ admin }) => {
-    if (admin) {
-      let adminAuth = true;
-      return adminAuth ? <Outlet /> : <Navigate to="/login" />;
-    } else {
-      let userAuth = true;
-      return userAuth ? (
+  const [isAuth, setIsAuth] = useState(undefined); // Set default state to undefined
+
+  useEffect(() => {
+    const fetchToken = async () => {
+      try {
+        const { data } = await axios.get("/api/get-token");
+        if (data.token) {
+          setIsAuth(data.token); // Set the token as the authentication state
+        } else {
+          setIsAuth(null); // Set null if no token is present
+        }
+      } catch (error) {
+        setIsAuth(null); // Set null in case of an error
+      }
+    };
+    fetchToken();
+  }, []);
+
+  // If still fetching the token, show the loading state
+  if (isAuth === undefined) return <LoginPage />;
+
+  // Logic for protected route based on user and admin status
+  if (isAuth) {
+    if (admin && isAuth === "admin") {
+      return <Outlet />; // Render the admin route
+    } else if (!admin) {
+      return (
         <>
-          <UserChatComponent /> <Outlet />
+          <UserChatComponent /> {/* Render user chat if not admin */}
+          <Outlet />
         </>
-      ) : (
-        <Navigate to="/login" />
       );
+    } else {
+      return <Navigate to="/login" />; // If the user is not admin but trying to access admin route
     }
-  };
-  
-  export default ProtectedRoutesComponent;
-  
+  } else {
+    return <Navigate to="/login" />; // Redirect to login if not authenticated
+  }
+};
+
+export default ProtectedRoutesComponent;

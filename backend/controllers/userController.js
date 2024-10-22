@@ -73,7 +73,7 @@ const loginUser = async (req, res, next) => {
     if (!email || !password) {
       return res.status(400).send("All fields are required");
     }
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).orFail(); // get the user by email
     if (user && comparePassword(password, user.password)) {
       // compare the password
       let cookieParams = {
