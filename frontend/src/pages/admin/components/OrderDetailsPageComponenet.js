@@ -10,8 +10,11 @@ import {
 import CartItemComponent from "../../../components/CartItemComponent";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { logout } from "../../../redux/actions/userActions";
+import { useDispatch } from "react-redux";
 
 const OrderDetailPageComponent = ({ getOrder, markDelivered }) => {
+  const dispatch = useDispatch();
   const { id } = useParams();
 
   const [userInfo, setUserInfo] = useState({});
@@ -133,15 +136,16 @@ const OrderDetailPageComponent = ({ getOrder, markDelivered }) => {
                         }
                       })
                       .catch((err) => {
-                        if (err.response) {
-                          console.log(
-                            err.response.data.message
-                              ? err.response.data.message
-                              : err.response.data
-                          );
-                        } else {
-                          console.log("Error:", err.message); // Handle case when err.response is undefined
-                        }
+                        dispatch(logout());
+                        // if (err.response) {
+                        //   console.log(
+                        //     err.response.data.message
+                        //       ? err.response.data.message
+                        //       : err.response.data
+                        //   );
+                        // } else {
+                        //   console.log("Error:", err.message); // Handle case when err.response is undefined
+                        // }
                       })
                   }
                   size="lg"

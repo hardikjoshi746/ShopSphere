@@ -2,8 +2,11 @@ import { Row, Col, Table, Button } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import AdminLinksComponent from "../../../components/admin/AdminLinksComponent";
 import { useEffect, useState } from "react";
+import { logout } from "../../../redux/actions/userActions";
+import { useDispatch } from "react-redux";
 
 const ProductPageComponent = ({ fetchProduct, deleteProduct }) => {
+  const dispatch = useDispatch();
   const [products, setProducts] = useState([]); // products state
   const [productDeleted, setProductDeleted] = useState(false); // product deleted state
 
@@ -23,15 +26,16 @@ const ProductPageComponent = ({ fetchProduct, deleteProduct }) => {
     fetchProduct(abctlr)
       .then((res) => setProducts(res))
       .catch((err) => {
-        if (err.response) {
-          console.log(
-            err.response.data.message
-              ? err.response.data.message
-              : err.response.data
-          );
-        } else {
-          console.log("Error:", err.message); // Handle case when err.response is undefined
-        }
+        dispatch(logout());
+        // if (err.response) {
+        //   console.log(
+        //     err.response.data.message
+        //       ? err.response.data.message
+        //       : err.response.data
+        //   );
+        // } else {
+        //   console.log("Error:", err.message); // Handle case when err.response is undefined
+        // }
       });
     return () => abctlr.abort(); // cleanup
   }, [productDeleted]);

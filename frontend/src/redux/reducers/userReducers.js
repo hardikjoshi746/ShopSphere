@@ -1,4 +1,4 @@
-import { LOGIN_USER } from "../constants/userConstants";
+import { LOGIN_USER, LOGOUT_USER } from "../constants/userConstants";
 
 export const userRegisterLoginReducer = (state = {}, action) => {
   // userRegisterLoginReducer is a reducer that takes in state and action as arguments
@@ -11,6 +11,8 @@ export const userRegisterLoginReducer = (state = {}, action) => {
         ...state,
         userInfo: action.payload,
       };
+    case LOGOUT_USER: // if the action type is LOGOUT_USER
+      return {}; // return an empty
     default: // if the action type is not LOGIN_USER
       return state;
   }
