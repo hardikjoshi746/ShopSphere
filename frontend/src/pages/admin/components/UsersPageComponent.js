@@ -2,11 +2,14 @@ import { Row, Col, Table, Button } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import AdminLinksComponent from "../../../components/admin/AdminLinksComponent";
 import { useEffect, useState } from "react";
+import { logout } from "../../../redux/actions/userActions";
+import { useDispatch } from "react-redux";
 
 // const deleteHandler = () => {
 //   if (window.confirm("Are you sure?")) alert("User deleted!");
 // };
 const UsersPageComponent = ({ fetchUser, deleteUser }) => {
+  const dispatch = useDispatch();
   const [users, setUsers] = useState([]); // users state
   const [userDeleted, setUserDeleted] = useState(false); // user deleted state
 
@@ -24,15 +27,16 @@ const UsersPageComponent = ({ fetchUser, deleteUser }) => {
     fetchUser(abctrl)
       .then((res) => setUsers(res))
       .catch((err) => {
-        if (err.response) {
-          console.log(
-            err.response.data.message
-              ? err.response.data.message
-              : err.response.data
-          );
-        } else {
-          console.log("Error:", err.message); // Handle case when err.response is undefined
-        }
+        dispatch(logout());
+        // if (err.response) {
+        //   console.log(
+        //     err.response.data.message
+        //       ? err.response.data.message
+        //       : err.response.data
+        //   );
+        // } else {
+        //   console.log("Error:", err.message); // Handle case when err.response is undefined
+        // }
       }); // set users state
     return () => abctrl.abort(); // cleanup
   }, [userDeleted]);
