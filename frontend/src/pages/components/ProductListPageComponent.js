@@ -52,7 +52,7 @@ const ProductListPageComponent = ({ getProducts }) => {
               rating={product.rating}
               numReviews={product.numReviews}
               description={product.description}
-              ProductID={product._id}
+              productID={product._id}
             />
           ))}
           <PaginationComponent />
