@@ -43,8 +43,8 @@ const LoginPageComponent = ({
           }
 
           if (res.success === "Login successful" && !res.userLoggedIn.isAdmin)
-            window.location.href = "/user";
-          else window.location.href = "/admin/orders";
+            navigate("/");
+          else navigate("/admin/orders");
         })
         .catch((err) => {
           setLoginUserResponseState({

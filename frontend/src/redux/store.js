@@ -1,11 +1,11 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import thunk from "redux-thunk";
 
-import { counterReducer } from "./reducers/cartReducers";
+import { cartReducer } from "./reducers/cartReducers";
 import { userRegisterLoginReducer } from "./reducers/userReducers";
 
 const reducer = combineReducers({
-  cart: counterReducer,
+  cart: cartReducer,
   UserRegisterLogin: userRegisterLoginReducer,
 });
 
@@ -18,7 +18,9 @@ const userInfoLocalStorage = localStorage.getItem("userInfo") // Check if user i
 const INITIAL_STATE = {
   // Set the initial state
   cart: {
-    value: 0,
+    cartItems: [],
+    itemCount: 0,
+    cartSubTotal: 0,
   },
   UserRegisterLogin: {
     // Set the initial state for the UserRegisterLogin reducer

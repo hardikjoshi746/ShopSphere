@@ -10,14 +10,22 @@ import {
 } from "react-bootstrap";
 import { Rating } from "react-simple-star-rating";
 import ImageZoom from "js-image-zoom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import AddedToCartMessageComponent from "../../components/AddedToCartMessageComponent";
 
 import { useParams } from "react-router-dom";
 
-const ProductDetailPageComponent = ({ addToCartHandler, products }) => {
+const ProductDetailPageComponent = ({
+  addToCartReduxAction,
+  reduxDispatch,
+}) => {
   const { id } = useParams();
-  console.log(id);
+  const [quantity, setQuantity] = useState(1);
+
+  const addToCartHandler = () => {
+    // this function will be called when the user clicks on the "Add to cart" button
+    reduxDispatch(addToCartReduxAction(id, quantity)); // dispatching the action
+  };
 
   var options = {
     // width: 400,
@@ -64,7 +72,7 @@ const ProductDetailPageComponent = ({ addToCartHandler, products }) => {
             <Col md={8}>
               <ListGroup variant="flush">
                 <ListGroup.Item>
-                  <h1>Product name {products}</h1>
+                  <h1>Product name</h1>
                 </ListGroup.Item>
                 <ListGroup.Item>
                   <Rating readonly size={20} initialValue={4} /> (1)
@@ -86,11 +94,16 @@ const ProductDetailPageComponent = ({ addToCartHandler, products }) => {
                 </ListGroup.Item>
                 <ListGroup.Item>
                   Quantity:
-                  <Form.Select size="lg" aria-label="Default select example">
-                    <option>1</option>
-                    <option value="1">2</option>
-                    <option value="2">3</option>
-                    <option value="3">4</option>
+                  <Form.Select
+                    value={quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
+                    size="lg"
+                    aria-label="Default select example"
+                  >
+                    <option>Choose</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
                   </Form.Select>
                 </ListGroup.Item>
                 <ListGroup.Item>
