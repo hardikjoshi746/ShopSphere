@@ -26,3 +26,16 @@ export const addToCart =
       console.error("Error adding to cart:", error);
     }
   };
+
+export const removeFromCart =
+  (productID, quantity, price) => (dispatch, getState) => {
+    dispatch({
+      type: actionTypes.REMOVE_FROM_CART,
+      payload: {
+        productID: productID,
+        quantity: quantity,
+        price: price,
+      },
+    });
+    localStorage.setItem("cart", JSON.stringify(getState().cart.cartItems));
+  };
