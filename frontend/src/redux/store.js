@@ -1,41 +1,51 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import thunk from "redux-thunk";
 
-import { counterReducer } from "./reducers/cartReducers";
+import { cartReducer } from "./reducers/cartReducers";
 import { userRegisterLoginReducer } from "./reducers/userReducers";
 
 const reducer = combineReducers({
-  cart: counterReducer,
+  cart: cartReducer,
   UserRegisterLogin: userRegisterLoginReducer,
 });
 
-const userInfoLocalStorage = localStorage.getItem("userInfo") // Check if user info is in local storage
-  ? JSON.parse(localStorage.getItem("userInfo")) // Parse the user info from local storage
-  : sessionStorage.getItem("userInfo") // Check if user info is in session storage
-  ? JSON.parse(sessionStorage.getItem("userInfo")) // Parse the user info from session storage
+const cartItemsInLocalStorage = localStorage.getItem("cart")
+  ? JSON.parse(localStorage.getItem("cart"))
+  : [];
+
+// Add back the userInfoLocalStorage definition
+const userInfoLocalStorage = localStorage.getItem("userInfo")
+  ? JSON.parse(localStorage.getItem("userInfo"))
+  : sessionStorage.getItem("userInfo")
+  ? JSON.parse(sessionStorage.getItem("userInfo"))
   : {};
 
+// Calculate initial totals from localStorage
+const initialItemsCount = cartItemsInLocalStorage.reduce(
+  (total, item) => total + Number(item.quantity || 0),
+  0
+);
+
+const initialCartSubtotal = cartItemsInLocalStorage.reduce(
+  (total, item) => total + Number(item.price || 0) * Number(item.quantity || 0),
+  0
+);
+
 const INITIAL_STATE = {
-  // Set the initial state
   cart: {
-    value: 0,
+    cartItems: cartItemsInLocalStorage,
+    itemsCount: initialItemsCount,
+    cartSubtotal: initialCartSubtotal,
   },
   UserRegisterLogin: {
-    // Set the initial state for the UserRegisterLogin reducer
-    userInfo: userInfoLocalStorage, // Set the user info from local or session storage
+    userInfo: userInfoLocalStorage,
   },
 };
 
 const store = configureStore({
   reducer,
-  preloadedState: INITIAL_STATE, // Set the initial state here
+  preloadedState: INITIAL_STATE,
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
 });
-
-// Dispatching an action with the correct type and payload
-store.dispatch({ type: "ADD_TO_CART", payload: 1 }); // Example action with a payload
-
-// Logging the state
-console.log(store.getState());
 
 export default store;
