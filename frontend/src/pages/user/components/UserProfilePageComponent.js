@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 const UserProfilePageComponent = ({
   updateUserApiRequest,
   fetchUser,
-  userInfo,
+  userInfoFromRedux,
   setReduxUserState,
   reduxDispatch,
   localStorage,
@@ -15,8 +15,9 @@ const UserProfilePageComponent = ({
     success: "",
     error: "",
   });
-  const [passwordMatchState, setPasswordMatchState] = useState(true);
+  const [passwordsMatchState, setPasswordsMatchState] = useState(true);
   const [user, setUser] = useState({});
+  const userInfo = userInfoFromRedux;
 
   useEffect(() => {
     fetchUser(userInfo._id)
@@ -30,9 +31,9 @@ const UserProfilePageComponent = ({
       "input[name=confirmPassword]"
     );
     if (confirmPassword.value === password.value) {
-      setPasswordMatchState(true);
+      setPasswordsMatchState(true);
     } else {
-      setPasswordMatchState(false);
+      setPasswordsMatchState(false);
     }
   };
 
@@ -70,33 +71,32 @@ const UserProfilePageComponent = ({
           setUpdateUserResponseState({ success: data.success, error: "" });
           reduxDispatch(
             setReduxUserState({
-              doNotLogOut: userInfo.doNotLogOut,
+              doNotLogout: userInfo.doNotLogout,
               ...data.userUpdated,
             })
           );
-          if (userInfo.doNotLogOut)
+          if (userInfo.doNotLogout)
             localStorage.setItem(
               "userInfo",
-              JSON.stringify({ doNotLogOut: true, ...data.userUpdated })
+              JSON.stringify({ doNotLogout: true, ...data.userUpdated })
             );
           else
             sessionStorage.setItem(
               "userInfo",
-              JSON.stringify({ doNotLogOut: false, ...data.userUpdated })
+              JSON.stringify({ doNotLogout: false, ...data.userUpdated })
             );
         })
         .catch((er) =>
           setUpdateUserResponseState({
-            error: er.response?.data?.message
+            error: er.response.data.message
               ? er.response.data.message
-              : "An unexpected error occurred",
+              : er.response.data,
           })
         );
     }
 
     setValidated(true);
   };
-
   return (
     <Container>
       <Row className="mt-5 justify-content-md-center">
@@ -108,8 +108,8 @@ const UserProfilePageComponent = ({
               <Form.Control
                 required
                 type="text"
-                defaultValue="John"
-                name={user.name}
+                defaultValue={user.name}
+                name="name"
               />
               <Form.Control.Feedback type="invalid">
                 Please enter a name
@@ -131,7 +131,10 @@ const UserProfilePageComponent = ({
               <Form.Label>Email address</Form.Label>
               <Form.Control
                 disabled
-                value="john@doe.com   if you want to change email, remove account and create new one with new email address"
+                value={
+                  user.email +
+                  "   if you want to change email, remove account and create new one with new email address"
+                }
               />
             </Form.Group>
             <Form.Group className="mb-3" controlId="formBasicPhone">
@@ -197,7 +200,7 @@ const UserProfilePageComponent = ({
                 placeholder="Password"
                 minLength={6}
                 onChange={onChange}
-                isInvalid={!passwordMatchState}
+                isInvalid={!passwordsMatchState}
               />
               <Form.Control.Feedback type="invalid">
                 Please anter a valid password
@@ -215,7 +218,7 @@ const UserProfilePageComponent = ({
                 placeholder="Repeat Password"
                 minLength={6}
                 onChange={onChange}
-                isInvalid={!passwordMatchState}
+                isInvalid={!passwordsMatchState}
               />
               <Form.Control.Feedback type="invalid">
                 Both passwords should match

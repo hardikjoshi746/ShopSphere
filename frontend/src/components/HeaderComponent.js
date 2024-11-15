@@ -15,8 +15,13 @@ import { useDispatch, useSelector } from "react-redux";
 
 const HeaderComponent = () => {
   const dispatch = useDispatch();
-  const { userInfo } = useSelector((state) => state.UserRegisterLogin);
-  const itemsCount = useSelector((state) => state.cart.itemsCount || 0); // Get the items count from the state
+  // Get userInfo with a default empty object to prevent undefined errors
+
+  const userInfo =
+    useSelector((state) => state.userRegisterLogin?.userInfo) || {};
+
+  const itemsCount = useSelector((state) => state.cart?.itemsCount) || 0;
+
   return (
     <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
       <Container>
@@ -40,16 +45,16 @@ const HeaderComponent = () => {
             </InputGroup>
           </Nav>
           <Nav>
-            {userInfo.isAdmin ? (
+            {userInfo?.isAdmin ? (
               <LinkContainer to="/admin/orders">
                 <Nav.Link>
                   admin
                   <span className="position-absolute top-1 start-10 translate-middle p-2 bg-danger border border-light rounded-circle"></span>
                 </Nav.Link>
               </LinkContainer>
-            ) : userInfo.name && !userInfo.isAdmin ? (
+            ) : userInfo?.name ? (
               <NavDropdown
-                title={`${userInfo.name} ${userInfo.lastName}`}
+                title={`${userInfo.name} ${userInfo.lastName || ""}`}
                 id="collapsible-nav-dropdown"
               >
                 <NavDropdown.Item

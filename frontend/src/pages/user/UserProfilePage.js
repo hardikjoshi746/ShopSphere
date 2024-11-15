@@ -14,7 +14,7 @@ const updateUserApiRequest = async (
   state,
   password
 ) => {
-  const { data } = axios.put("/api/users/profile", {
+  const { data } = await axios.put("/api/users/profile", {
     name,
     lastName,
     phoneNumber,
@@ -29,21 +29,21 @@ const updateUserApiRequest = async (
 };
 
 const fetchUser = async (id) => {
-  // fetch user by id
-  const { data } = axios.get("/api/users/profile" + id); // get user by id
-  return data; // return user data
+  const { data } = await axios.get("/api/users/profile/" + id);
+  return data;
 };
 
 const UserProfilePage = () => {
-  const dispatch = useDispatch(); // useDispatch hook to dispatch actions
-  const { userInfo } = useSelector((state) => state.userLogin); // get user info from redux state
+  const reduxDispatch = useDispatch();
+  const { userInfo } = useSelector((state) => state.userRegisterLogin);
+
   return (
     <UserProfilePageComponent
       updateUserApiRequest={updateUserApiRequest}
       fetchUser={fetchUser}
-      userInfofromRedux={userInfo}
+      userInfoFromRedux={userInfo}
       setReduxUserState={setReduxUserState}
-      reduxDispatch={dispatch}
+      reduxDispatch={reduxDispatch}
       localStorage={window.localStorage}
       sessionStorage={window.sessionStorage}
     />

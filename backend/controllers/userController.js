@@ -139,6 +139,12 @@ const updateUserProfile = async (req, res, next) => {
         name: user.name,
         lastName: user.lastName,
         email: user.email,
+        phoneNumber: user.phoneNumber,
+        address: user.address,
+        country: user.country,
+        zipCode: user.zipCode,
+        city: user.city,
+        state: user.state,
         isAdmin: user.isAdmin,
       },
     });

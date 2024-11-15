@@ -3,21 +3,43 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setReduxUserState } from "../redux/actions/userActions";
 
-const Loginpage = () => {
+const LoginPage = () => {
   const reduxDispatch = useDispatch();
+
   const loginApiRequest = async (email, password, doNotLogout) => {
-    const { data } = await axios.post("/api/users/login", {
-      email,
-      password,
-      doNotLogout,
-    });
-    if (data.userLoggedIn.doNotLogout)
-      localStorage.setItem(
-        "userInfo",
-        JSON.stringify(data.userLoggedIn)
-      ); // Save user info to local storage
-    else sessionStorage.setItem("userInfo", JSON.stringify(data.userLoggedIn)); // Save user info to session storage
-    return data;
+    try {
+      console.log("Making login API request...");
+      const { data } = await axios.post(
+        "/api/users/login",
+        {
+          email,
+          password,
+          doNotLogout,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      console.log("API response received:", data);
+
+      if (data.userLoggedIn) {
+        const userInfo = JSON.stringify(data.userLoggedIn);
+        if (doNotLogout) {
+          localStorage.setItem("userInfo", userInfo);
+        } else {
+          sessionStorage.setItem("userInfo", userInfo);
+        }
+        reduxDispatch(setReduxUserState(data.userLoggedIn)); // Update Redux state
+      }
+
+      return data;
+    } catch (error) {
+      console.error("Login API error:", error);
+      throw error;
+    }
   };
 
   return (
@@ -29,4 +51,4 @@ const Loginpage = () => {
   );
 };
 
-export default Loginpage;
+export default LoginPage;

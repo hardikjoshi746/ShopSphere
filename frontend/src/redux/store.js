@@ -6,7 +6,7 @@ import { userRegisterLoginReducer } from "./reducers/userReducers";
 
 const reducer = combineReducers({
   cart: cartReducer,
-  UserRegisterLogin: userRegisterLoginReducer,
+  userRegisterLogin: userRegisterLoginReducer,
 });
 
 const cartItemsInLocalStorage = localStorage.getItem("cart")
@@ -21,23 +21,33 @@ const userInfoLocalStorage = localStorage.getItem("userInfo")
   : {};
 
 // Calculate initial totals from localStorage
-const initialItemsCount = cartItemsInLocalStorage.reduce(
-  (total, item) => total + Number(item.quantity || 0),
-  0
-);
+// const initialItemsCount = cartItemsInLocalStorage.reduce(
+//   (total, item) => total + Number(item.quantity || 0),
+//   0
+// );
 
-const initialCartSubtotal = cartItemsInLocalStorage.reduce(
-  (total, item) => total + Number(item.price || 0) * Number(item.quantity || 0),
-  0
-);
+// const initialCartSubtotal = cartItemsInLocalStorage.reduce(
+//   (total, item) => total + Number(item.price || 0) * Number(item.quantity || 0),
+//   0
+// );
 
 const INITIAL_STATE = {
   cart: {
     cartItems: cartItemsInLocalStorage,
-    itemsCount: initialItemsCount,
-    cartSubtotal: initialCartSubtotal,
+    itemsCount: cartItemsInLocalStorage
+      ? cartItemsInLocalStorage.reduce(
+          (quantity, item) => Number(item.quantity) + quantity,
+          0
+        )
+      : 0,
+    cartSubtotal: cartItemsInLocalStorage
+      ? cartItemsInLocalStorage.reduce(
+          (price, item) => price + item.price * item.quantity,
+          0
+        )
+      : 0,
   },
-  UserRegisterLogin: {
+  userRegisterLogin: {
     userInfo: userInfoLocalStorage,
   },
 };
