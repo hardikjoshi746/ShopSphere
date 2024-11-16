@@ -1,6 +1,6 @@
+import { useState, useEffect } from "react";
 import { Container, Row, Col, Form, Button, Alert } from "react-bootstrap";
-import { useState } from "react";
-import { Link, replace, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Spinner from "react-bootstrap/Spinner";
 
 const LoginPageComponent = ({
@@ -17,45 +17,48 @@ const LoginPageComponent = ({
 
   const navigate = useNavigate();
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     event.stopPropagation();
+
     const form = event.currentTarget.elements;
     const email = form.email.value;
     const password = form.password.value;
     const doNotLogout = form.doNotLogout.checked;
 
     if (event.currentTarget.checkValidity() === true && email && password) {
-      // check if the form is valid
-      setLoginUserResponseState({ loading: true }); // set loading state to true
-      loginApiRequest(email, password, doNotLogout) // call the loginApiRequest function
-        .then((res) => {
-          // handle the response
+      try {
+        console.log("Starting login process...");
+        setLoginUserResponseState({ loading: true, error: "", success: "" });
+
+        const data = await loginApiRequest(email, password, doNotLogout);
+        console.log("Login API response:", data);
+
+        if (data.userLoggedIn) {
+          reduxDispatch(setReduxUserState(data.userLoggedIn));
           setLoginUserResponseState({
-            // set the response state
-            success: res.success,
             loading: false,
             error: "",
+            success: data.success,
           });
 
-          if (res.userLoggedIn) {
-            reduxDispatch(setReduxUserState(res.userLoggedIn)); // dispatch the setReduxUserState action
+          console.log("Navigating user...");
+          if (!data.userLoggedIn.isAdmin) {
+            navigate("/", { replace: true });
+          } else {
+            navigate("/admin/orders", { replace: true });
           }
-
-          if (res.success === "Login successful" && !res.userLoggedIn.isAdmin)
-            navigate("/");
-          else navigate("/admin/orders");
-        })
-        .catch((err) => {
-          setLoginUserResponseState({
-            error: err.response.data.message
-              ? err.response.data.message
-              : err.response.data,
-          });
+        }
+      } catch (err) {
+        console.error("Login error:", err);
+        setLoginUserResponseState({
+          loading: false,
+          success: "",
+          error: err.response?.data?.message || "Login failed",
         });
-
-      setValidated(true);
+      }
     }
+    setValidated(true);
   };
 
   return (
@@ -71,6 +74,7 @@ const LoginPageComponent = ({
                 required
                 type="email"
                 placeholder="Enter email"
+                disabled={loginUserResponseState.loading}
               />
             </Form.Group>
             <Form.Group className="mb-3" controlId="formBasicPassword">
@@ -80,6 +84,7 @@ const LoginPageComponent = ({
                 required
                 type="password"
                 placeholder="Password"
+                disabled={loginUserResponseState.loading}
               />
             </Form.Group>
             <Form.Group className="mb-3" controlId="formBasicCheckbox">
@@ -87,6 +92,7 @@ const LoginPageComponent = ({
                 name="doNotLogout"
                 type="checkbox"
                 label="Do not logout"
+                disabled={loginUserResponseState.loading}
               />
             </Form.Group>
 
@@ -97,30 +103,38 @@ const LoginPageComponent = ({
               </Col>
             </Row>
 
-            <Button variant="primary" type="submit">
-              {loginUserResponseState &&
-              loginUserResponseState.loading === true ? ( // check if the loading state is true
-                <Spinner
-                  as="span"
-                  animation="border"
-                  size="sm"
-                  role="status"
-                  aria-hidden="true"
-                />
-              ) : (
-                ""
-              )}
-              Login
-            </Button>
-            <Alert
-              show={
-                loginUserResponseState &&
-                loginUserResponseState.error === "Invalid email or password"
-              }
-              variant="danger"
+            <Button
+              variant="primary"
+              type="submit"
+              disabled={loginUserResponseState.loading}
             >
-              Wrong credentials
-            </Alert>
+              {loginUserResponseState.loading ? (
+                <>
+                  <Spinner
+                    as="span"
+                    animation="border"
+                    size="sm"
+                    role="status"
+                    aria-hidden="true"
+                    className="me-2"
+                  />
+                  Logging in...
+                </>
+              ) : (
+                "Login"
+              )}
+            </Button>
+
+            {loginUserResponseState.error && (
+              <Alert variant="danger" className="mt-3">
+                {loginUserResponseState.error}
+              </Alert>
+            )}
+            {loginUserResponseState.success && (
+              <Alert variant="success" className="mt-3">
+                {loginUserResponseState.success}
+              </Alert>
+            )}
           </Form>
         </Col>
       </Row>

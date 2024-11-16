@@ -8,7 +8,7 @@ const orderSchema = new mongoose.Schema({
     required: true,
   },
   orderTotal: {
-    itemCount: { type: Number, required: true },
+    itemCount: { type: Number, required: true, default: 0 },
     cartSubtotal: { type: Number, required: true },
   },
   cartItems: [

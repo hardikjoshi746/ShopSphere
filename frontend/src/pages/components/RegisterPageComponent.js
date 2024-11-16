@@ -44,25 +44,26 @@ const RegisterPageComponent = ({
       email &&
       form.password.value === form.confirmPassword.value
     ) {
-      setRegisterUserResponseState({ loading: true });
+      setRegisterUserResponseState({ loading: true, error: "", success: "" }); // Clear previous states
       registerUserApiRequest(name, lastName, email, password)
         .then((data) => {
           setRegisterUserResponseState({
             success: data.message,
             loading: false,
+            error: "", // Clear any previous error
           });
           dispatch(setReduxUserState(data.userCreated));
         })
-
         .catch((err) =>
           setRegisterUserResponseState({
             error: err.response.data.message
               ? err.response.data.message
               : err.response.data,
+            loading: false, // Make sure to set loading to false
+            success: "", // Clear any previous success
           })
         );
     }
-
     setValidated(true);
   };
   return (
@@ -163,19 +164,12 @@ const RegisterPageComponent = ({
               )}
               Submit
             </Button>
-            <Alert
-              show={
-                registerUserResponseState && registerUserResponseState.error
-              }
-              variant="danger"
-            >
-              User with that email already exists!
+            <Alert show={!!registerUserResponseState?.error} variant="danger">
+              {registerUserResponseState?.error ||
+                "User with that email already exists!"}
             </Alert>
             <Alert
-              show={
-                registerUserResponseState &&
-                registerUserResponseState.success === "User created"
-              }
+              show={registerUserResponseState?.success === "User created"}
               variant="info"
             >
               User created

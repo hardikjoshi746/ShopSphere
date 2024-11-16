@@ -25,37 +25,40 @@ const getOrder = async (req, res, next) => {
 
 const createOrder = async (req, res, next) => {
   try {
-    const { orderTotal, cartItems, paymentMethod } = req.body; // get order data from request body
-    if (!(orderTotal && cartItems && paymentMethod)) {
+    const { orderTotal, cartItems, paymentMethod } = req.body;
+    if (!orderTotal || !cartItems || !paymentMethod) {
       return res.status(400).json({ message: "All fields are required" });
     }
+    console.log("Order data validated successfully");
 
-    let ids = cartItems.map((item) => {
-      return item.productId;
-    });
-    let qty = cartItems.map((item) => {
-      return Number(item.quantity);
+    const ids = cartItems.map((item) => item.productID);
+    const qty = cartItems.map((item) => Number(item.quantity));
+    const products = await Product.find({ _id: { $in: ids } });
+
+    if (products.length !== ids.length) {
+      return res
+        .status(404)
+        .json({ message: "One or more products not found" });
+    }
+
+    products.forEach((product, index) => {
+      product.sales += qty[index];
+      product.save();
     });
 
-    await Product.find({ _id: { $in: ids } }).then((products) => {
-      products.forEach(function (product, index) {
-        product.sales += qty[index]; // corrected from 'idx' to 'index'
-        product.save();
-      });
-    });
-
-    // Now we can create the order after updating product sales
     const order = new Order({
       user: ObjectId(req.user._id),
-      orderTotal: orderTotal,
-      cartItems: cartItems,
-      paymentMethod: paymentMethod,
+      orderTotal,
+      cartItems,
+      paymentMethod,
     });
-
-    const createdOrder = await order.save(); // save the order
+    const createdOrder = await order.save();
     res.status(201).send(createdOrder);
   } catch (error) {
-    next(error);
+    console.error("Error in createOrder:", error);
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
 
