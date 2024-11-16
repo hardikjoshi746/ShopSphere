@@ -1,6 +1,8 @@
 import UserCartDetailsPageComponent from "./components/UserCartDetailsPageComponent";
+
 import { useSelector, useDispatch } from "react-redux";
 import { addToCart, removeFromCart } from "../../redux/actions/cartActions";
+
 import axios from "axios";
 
 const UserCartDetailsPage = () => {
