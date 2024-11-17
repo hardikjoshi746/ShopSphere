@@ -12,7 +12,10 @@ const OrderPageComponent = ({ getOrders }) => {
     getOrders()
       .then((orders) => setOrders(orders))
       .catch((err) => {
-        dispatch(logout());
+        console.error("Error fetching orders:", err.response || err.message);
+        if (err.response && err.response.status === 401) {
+          dispatch(logout());
+        }
         // if (err.response) {
         //   console.log(
         //     err.response.data.message
