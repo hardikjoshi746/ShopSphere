@@ -5,7 +5,7 @@ import LoginPage from "../pages/LoginPage";
 import axios from "axios";
 
 const ProtectedRoutesComponent = ({ admin }) => {
-  const [isAuth, setIsAuth] = useState(undefined); // Set default state to undefined
+  const [isAuth, setIsAuth] = useState(); // Set default state to undefined
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -38,9 +38,11 @@ const ProtectedRoutesComponent = ({ admin }) => {
         </>
       );
     } else {
+      console.log("You are not authorized to access this page");
       return <Navigate to="/login" />; // If the user is not admin but trying to access admin route
     }
   } else {
+    console.log("You are not authenticated to access this page");
     return <Navigate to="/login" />; // Redirect to login if not authenticated
   }
 };
