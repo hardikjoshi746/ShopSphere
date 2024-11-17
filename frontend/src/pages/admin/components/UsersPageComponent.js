@@ -27,7 +27,10 @@ const UsersPageComponent = ({ fetchUser, deleteUser }) => {
     fetchUser(abctrl)
       .then((res) => setUsers(res))
       .catch((err) => {
-        dispatch(logout());
+        console.error("Error fetching users:", err);
+        if (err.response && err.response.status === 401) {
+          dispatch(logout());
+        }
         // if (err.response) {
         //   console.log(
         //     err.response.data.message

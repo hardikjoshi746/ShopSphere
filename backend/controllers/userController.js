@@ -6,6 +6,7 @@ const generateAuthToken = require("../utils/generateAuthToken");
 
 const getUsers = async (req, res, next) => {
   try {
+    console.log("Admin Access: ", req.user);
     const users = await User.find({}).select("-password"); // get all users and exclude the password field
     return res.json(users);
   } catch (error) {
@@ -59,6 +60,7 @@ const registerUser = async (req, res, next) => {
             lastName: user.lastName,
             email: user.email,
             isAdmin: user.isAdmin,
+            doNotLogout,
           },
         }); // return a success message
     }

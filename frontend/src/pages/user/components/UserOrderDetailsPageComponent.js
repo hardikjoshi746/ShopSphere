@@ -11,47 +11,46 @@ import CartItemComponent from "../../../components/CartItemComponent";
 import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 
-const UserOrderDetailPageComponent = ({
+const UserOrderDetailsPageComponent = ({
   userInfo,
   getUser,
   getOrder,
-  loadScript,
+  loadPayPalScript,
 }) => {
-  const { id } = useParams();
   const [userAddress, setUserAddress] = useState({});
-  const [PaymentMetod, setPaymentMetod] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("");
   const [isPaid, setIsPaid] = useState(false);
   const [orderButtonMessage, setOrderButtonMessage] = useState("");
+  const [cartItems, setCartItems] = useState([]);
   const [cartSubtotal, setCartSubtotal] = useState(0);
   const [isDelivered, setIsDelivered] = useState(false);
   const [buttonDisabled, setButtonDisabled] = useState(false);
-  const [cartItems, setCartItems] = useState([]);
 
   const paypalContainer = useRef();
-  console.log(paypalContainer);
+
+  const { id } = useParams();
 
   useEffect(() => {
     getUser()
       .then((data) => {
         setUserAddress({
-          address: data.address || "N/A",
-          city: data.city || "N/A",
-          postalCode: data.postalCode || "N/A",
-          country: data.country || "N/A",
-          phoneNumber: data.phoneNumber || "N/A",
-          zipCode: data.zipCode || "N/A",
-          state: data.state || "N/A",
+          address: data.address,
+          city: data.city,
+          country: data.country,
+          zipCode: data.zipCode,
+          state: data.state,
+          phoneNumber: data.phoneNumber,
         });
       })
-      .catch((error) => console.log(error));
+      .catch((err) => console.log(err));
   }, []);
 
   useEffect(() => {
     getOrder(id)
       .then((data) => {
-        setPaymentMetod(data.paymentMethod);
+        setPaymentMethod(data.paymentMethod);
         setCartItems(data.cartItems);
-        setCartSubtotal(data.cartSubtotal);
+        setCartSubtotal(data.orderTotal.cartSubtotal);
         data.isDelivered
           ? setIsDelivered(data.deliveredAt)
           : setIsDelivered(false);
@@ -64,30 +63,32 @@ const UserOrderDetailPageComponent = ({
             setOrderButtonMessage("Pay for your order");
           } else if (data.paymentMethod === "cod") {
             setButtonDisabled(true);
-            setOrderButtonMessage("You will pay on delivery");
+            setOrderButtonMessage("Wait for your order. You pay on delivery");
           }
         }
       })
-      .catch((error) => console.log(error));
+      .catch((err) => console.log(err));
   }, []);
 
   const orderHandler = () => {
     setButtonDisabled(true);
-    if (PaymentMetod === "pp") {
-      setOrderButtonMessage("Click the button to be, Redirected to PayPal...");
-    }
-    if (!isPaid) {
-      loadScript({
-        "client-id":
-          "AZ8t3d31P_XkqvlidnnUU5iqgYq5QpF57oG-8Ek6D6nWSgzRvnHL-CnHr9OFU4e72S3j_VgDwuiNNKkS",
-      })
-        .then((paypal) => {
-          paypal.Buttons({}).render("#paypal-container-element");
-        })
-        .catch((error) => console.log("failed to load paypal", error));
+    if (paymentMethod === "pp") {
+      setOrderButtonMessage(
+        "To pay for your order click one of the buttons below"
+      );
+      if (!isPaid) {
+        loadPayPalScript(cartSubtotal, cartItems, id, UpdateStateAfterOrder);
+      }
     } else {
-      setOrderButtonMessage("Thank you for your order");
+      setOrderButtonMessage("Your order was placed. Thank you");
     }
+  };
+
+  const UpdateStateAfterOrder = (paidAt) => {
+    setOrderButtonMessage("Your order was placed. Thank you");
+    setIsPaid(paidAt);
+    setButtonDisabled(true);
+    paypalContainer.current.style = "display: none";
   };
 
   return (
@@ -100,13 +101,13 @@ const UserOrderDetailPageComponent = ({
             <Col md={6}>
               <h2>Shipping</h2>
               <b>Name</b>: {userInfo.name} {userInfo.lastName} <br />
-              <b>Address</b>: {userAddress.address} {userAddress.city}
-              {userAddress.state} {userAddress.zip} <br />
+              <b>Address</b>: {userAddress.address} {userAddress.city}{" "}
+              {userAddress.state} {userAddress.zipCode} <br />
               <b>Phone</b>: {userAddress.phoneNumber}
             </Col>
             <Col md={6}>
               <h2>Payment method</h2>
-              <Form.Select value={PaymentMetod} disabled={true}>
+              <Form.Select value={paymentMethod} disabled={true}>
                 <option value="pp">PayPal</option>
                 <option value="cod">
                   Cash On Delivery (delivery may be delayed)
@@ -120,7 +121,7 @@ const UserOrderDetailPageComponent = ({
                   variant={isDelivered ? "success" : "danger"}
                 >
                   {isDelivered ? (
-                    <>delivered at {isDelivered}</>
+                    <>Delivered at {isDelivered}</>
                   ) : (
                     <>Not delivered</>
                   )}
@@ -128,7 +129,7 @@ const UserOrderDetailPageComponent = ({
               </Col>
               <Col>
                 <Alert className="mt-3" variant={isPaid ? "success" : "danger"}>
-                  {isPaid ? <>paid at {isPaid}</> : <>Not paid</>}
+                  {isPaid ? <>Paid on {isPaid}</> : <>Not paid yet</>}
                 </Alert>
               </Col>
             </Row>
@@ -163,19 +164,16 @@ const UserOrderDetailPageComponent = ({
               <div className="d-grid gap-2">
                 <Button
                   size="lg"
-                  variant="danger"
                   onClick={orderHandler}
+                  variant="danger"
                   type="button"
                   disabled={buttonDisabled}
                 >
                   {orderButtonMessage}
                 </Button>
-                <div style={{ position: "relative", zIndex: 1 }}>
-                  <div
-                    ref={paypalContainer}
-                    id="paypal-container-element"
-                  ></div>
-                </div>
+              </div>
+              <div style={{ position: "relative", zIndex: 1 }}>
+                <div ref={paypalContainer} id="paypal-container-element"></div>
               </div>
             </ListGroup.Item>
           </ListGroup>
@@ -185,4 +183,4 @@ const UserOrderDetailPageComponent = ({
   );
 };
 
-export default UserOrderDetailPageComponent;
+export default UserOrderDetailsPageComponent;

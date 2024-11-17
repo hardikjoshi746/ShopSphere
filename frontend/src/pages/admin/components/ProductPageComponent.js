@@ -26,7 +26,9 @@ const ProductPageComponent = ({ fetchProduct, deleteProduct }) => {
     fetchProduct(abctlr)
       .then((res) => setProducts(res))
       .catch((err) => {
-        dispatch(logout());
+        if (err.response && err.response.status === 401) {
+          dispatch(logout());
+        }
         // if (err.response) {
         //   console.log(
         //     err.response.data.message

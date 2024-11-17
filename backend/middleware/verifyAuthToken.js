@@ -24,6 +24,7 @@ const verifyIsLoggedIn = (req, res, next) => {
 };
 
 const verifyIsAdmin = (req, res, next) => {
+  console.log("Admin Check: ", req.user);
   if (req.user && req.user.isAdmin) {
     // check if the user is an admin
     next();
