@@ -4,7 +4,9 @@ import axios from "axios";
 import { loadScript } from "@paypal/paypal-js";
 
 const getOrder = async (orderId) => {
-  const { data } = await axios.get("/api/orders/user/" + orderId);
+  const { data } = await axios.get(
+    `${process.env.REACT_APP_API_URL}/orders/user/${orderId}`
+  );
   return data;
 };
 

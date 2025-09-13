@@ -2,12 +2,16 @@ import OrderDetailPageComponent from "./components/OrderDetailsPageComponenet";
 import axios from "axios";
 
 const getOrder = async (id) => {
-  const { data } = await axios.get("/api/orders/user/" + id); // get order details
+  const { data } = await axios.get(
+    `${process.env.REACT_APP_API_URL}/orders/user/${id}`
+  ); // get order details
   return data;
 };
 
 const markDelivered = async (id) => {
-  const { data } = await axios.put("/api/orders/delivered/" + id); // mark order as delivered
+  const { data } = await axios.put(
+    `${process.env.REACT_APP_API_URL}/orders/delivered/${id}`
+  ); // mark order as delivered
   if (data) {
     return data;
   }

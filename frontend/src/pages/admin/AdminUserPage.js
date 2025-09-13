@@ -2,14 +2,16 @@ import UsersPageComponent from "./components/UsersPageComponent";
 import axios from "axios";
 
 const fetchUser = async (abctlr) => {
-  const { data } = await axios.get("/api/users", {
+  const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/users`, {
     signal: abctlr.signal,
   });
   return data;
 };
 
 const deleteUser = async (usedId) => {
-  const { data } = await axios.delete(`/api/users/${usedId}`);
+  const { data } = await axios.delete(
+    `${process.env.REACT_APP_API_URL}/users/${usedId}`
+  );
   return data;
 };
 

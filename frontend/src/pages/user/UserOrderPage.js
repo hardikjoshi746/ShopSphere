@@ -2,7 +2,7 @@ import UserOrderPageComponent from "./components/UserOrderPageComponent";
 import axios from "axios";
 
 const getOrders = async () => {
-  const { data } = await axios.get("/api/orders");
+  const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/orders`);
   return data;
 };
 

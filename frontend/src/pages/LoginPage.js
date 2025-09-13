@@ -10,17 +10,9 @@ const LoginPage = () => {
     try {
       console.log("Making login API request...");
       const { data } = await axios.post(
-        "/api/users/login",
-        {
-          email,
-          password,
-          doNotLogout,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+        `${process.env.REACT_APP_API_URL}/users/login`,
+        { email, password, doNotLogout },
+        { headers: { "Content-Type": "application/json" } }
       );
 
       console.log("API response received:", data);

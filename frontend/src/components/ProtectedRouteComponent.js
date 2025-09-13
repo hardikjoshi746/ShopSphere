@@ -10,7 +10,9 @@ const ProtectedRoutesComponent = ({ admin }) => {
   useEffect(() => {
     const fetchToken = async () => {
       try {
-        const { data } = await axios.get("/api/get-token");
+        const { data } = await axios.get(
+          `${process.env.REACT_APP_API_URL}/get-token`
+        );
         if (data.token) {
           setIsAuth(data.token); // Set the token as the authentication state
         } else {

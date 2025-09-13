@@ -29,7 +29,9 @@ const updateUserApiRequest = async (
 };
 
 const fetchUser = async (id) => {
-  const { data } = await axios.get("/api/users/profile/" + id);
+  const { data } = await axios.get(
+    `${process.env.REACT_APP_API_URL}/users/profile/${id}`
+  );
   return data;
 };
 

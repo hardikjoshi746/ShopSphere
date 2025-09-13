@@ -14,12 +14,17 @@ const UserCartDetailsPage = () => {
   const reduxDispatch = useDispatch();
 
   const getUser = async () => {
-    const { data } = await axios.get("/api/users/profile/" + userInfo._id);
+    const { data } = await axios.get(
+      `${process.env.REACT_APP_API_URL}/users/profile/${userInfo._id}`
+    );
     return data;
   };
 
   const createOrder = async (orderData) => {
-    const { data } = await axios.post("/api/orders", { ...orderData });
+    const { data } = await axios.post(
+      `${process.env.REACT_APP_API_URL}/orders`,
+      { ...orderData }
+    );
     return data;
   };
 
