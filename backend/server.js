@@ -10,9 +10,22 @@ app.use(express.json()); // to parse the incoming requests with the json data
 app.use(cookieParser()); // to parse the incoming requests with the cookies
 app.use(fileUpload()); // to parse the incoming requests with the files
 
+const allowedOrigins = [
+  "https://shop-sphere-khaki.vercel.app",
+  "https://shop-sphere-navy.vercel.app",
+];
+
 app.use(
   cors({
-    origin: "https://shop-sphere-khaki.vercel.app", // your frontend URL
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true); // allow non-browser requests
+      if (allowedOrigins.indexOf(origin) === -1) {
+        const msg =
+          "The CORS policy for this site does not allow access from the specified Origin.";
+        return callback(new Error(msg), false);
+      }
+      return callback(null, true);
+    },
     credentials: true,
   })
 );
